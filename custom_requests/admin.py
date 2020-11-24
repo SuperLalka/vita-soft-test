@@ -14,3 +14,9 @@ class CategoriesAdmin(admin.ModelAdmin):
     }
     list_display = ('creation_date', 'user', 'status')
     list_filter = ('user', 'status')
+
+
+@admin.register(models.ExtendingUser)
+class CategoriesAdmin(admin.ModelAdmin):
+    list_display = ('user', 'is_user', 'is_operator', 'is_admin')
+    list_filter = ('is_user', 'is_operator', 'is_admin')
