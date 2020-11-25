@@ -1,14 +1,12 @@
 from django.contrib.auth.models import User
 
-from rest_framework import viewsets
-from rest_framework.response import Response
+from rest_framework import viewsets, mixins
+from rest_framework.viewsets import GenericViewSet
 
 from . import models, permissions, serializers
 
 
 class RequestsViewSet(viewsets.ModelViewSet):
-    queryset = models.Requests.objects.all()
-    serializer_class = serializers.RequestsSerializer
     lookup_field = 'id'
     permission_classes_by_action = {'create': [permissions.UserPermission],
                                     'retrieve': [permissions.OperatorPermission | permissions.UserPermission],
@@ -23,45 +21,27 @@ class RequestsViewSet(viewsets.ModelViewSet):
         except KeyError:
             return [permission() for permission in self.permission_classes]
 
-    def create(self, request, *args, **kwargs):
-        request.data['status'] = 'drf'
-        request.data['user'] = request.user.id
-        return super(RequestsViewSet, self).create(request)
+    def get_queryset(self):
+        if self.request.user.extendinguser.check_group('usr'):
+            return models.Requests.objects.filter(user=self.request.user, status='drf')
+        elif self.request.user.extendinguser.check_group('opr'):
+            return models.Requests.objects.filter(status='snt')
 
-    def list(self, request, *args, **kwargs):
-        if request.user.extendinguser.is_user:
-            queryset = models.Requests.objects.filter(user_id=request.user.id, status='drf')
-        else:
-            queryset = models.Requests.objects.filter(status='snt')
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def retrieve(self, request, pk=None, *args, **kwargs):
-        instance = self.get_object()
-        if (request.user.extendinguser.is_user and instance.user_id == request.user.id or
-                request.user.extendinguser.is_operator and instance.status == 'snt'):
-            serializer = self.get_serializer(instance)
-            return Response(serializer.data)
-        if request.user.extendinguser.is_user:
-            return Response("Нельзя просматривать чужие заявки")
-        return Response("Статус заявки не 'отправлено'")
-
-    def update(self, request, pk=None, *args, **kwargs):
-        if request.user.extendinguser.is_user:
-            data = {'text': request.data['text']}
-        else:
-            data = {'status': request.data['status']}
-
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
+    def get_serializer_class(self):
+        if self.request.user.extendinguser.check_group('usr'):
+            return serializers.RequestsForUserSerializer
+        elif self.request.user.extendinguser.check_group('opr'):
+            return serializers.RequestsForOperatorSerializer
 
 
-class UsersViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+class UsersViewSet(mixins.ListModelMixin,
+                   mixins.UpdateModelMixin,
+                   GenericViewSet):
     serializer_class = serializers.UsersSerializer
     lookup_field = 'id'
     permission_classes = [permissions.AdminPermission]
+
+    def get_queryset(self):
+        users_list = list(models.AssignedRoles.objects.filter(
+            role__role_name='usr').values_list('user__user_id', flat=True))
+        return models.User.objects.filter(id__in=users_list)
