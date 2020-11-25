@@ -7,16 +7,26 @@ from . import models
 
 
 @admin.register(models.Requests)
-class CategoriesAdmin(admin.ModelAdmin):
-    date_hierarchy = 'creation_date'
+class RequestsAdmin(admin.ModelAdmin):
+    date_hierarchy = 'created_at'
     formfield_overrides = {
         django_models.CharField: {'widget': TextInput(attrs={'size': '100'})}
     }
-    list_display = ('creation_date', 'user', 'status')
+    list_display = ('created_at', 'user', 'status')
     list_filter = ('user', 'status')
 
 
+class AssignedRolesInline(admin.TabularInline):
+    model = models.AssignedRoles
+    extra = 1
+
+
 @admin.register(models.ExtendingUser)
-class CategoriesAdmin(admin.ModelAdmin):
-    list_display = ('user', 'is_user', 'is_operator', 'is_admin')
-    list_filter = ('is_user', 'is_operator', 'is_admin')
+class ExtendingUserAdmin(admin.ModelAdmin):
+    inlines = [AssignedRolesInline]
+    list_display = ('user',)
+
+
+@admin.register(models.UserRoles)
+class UserRolesAdmin(admin.ModelAdmin):
+    list_display = ('role_name',)
