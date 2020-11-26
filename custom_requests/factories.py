@@ -8,14 +8,15 @@ class UsersFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.User
 
-    username = factory.Faker('first_name')
+    # username = factory.Faker('first_name')
+    username = factory.Sequence(lambda n: 'user%d' % n)
 
 
 class UserRolesFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.UserRoles
 
-    role = 'usr'
+    role_name = 'usr'
 
 
 class ExtendingUserFactory(factory.django.DjangoModelFactory):
@@ -23,7 +24,6 @@ class ExtendingUserFactory(factory.django.DjangoModelFactory):
         model = models.ExtendingUser
 
     user = factory.SubFactory(UsersFactory)
-    roles = factory.SubFactory(UserRolesFactory)
 
 
 class RequestsFactory(factory.django.DjangoModelFactory):
