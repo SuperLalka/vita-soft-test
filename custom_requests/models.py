@@ -26,14 +26,14 @@ class Requests(models.Model):
 
 class ExtendingUser(models.Model):
     user = models.OneToOneField(django_settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    roles = models.ManyToManyField('UserRoles', through='AssignedRoles')
+    roles = models.ManyToManyField('UserRoles')
 
     def __str__(self):
         return 'Extending info for user {}'.format(self.user.username)
 
     def check_group(self, group):
-        user_roles = list(AssignedRoles.objects.filter(
-            user_id=self.user.id).values_list('role__role_name', flat=True))
+        user_roles = list(self.roles.filter(
+            extendinguser=self).values_list('role_name', flat=True))
         return group in user_roles
 
     class Meta:
@@ -54,11 +54,3 @@ class UserRoles(models.Model):
         ordering = ['id']
         verbose_name = 'User role'
         verbose_name_plural = 'User roles'
-
-
-class AssignedRoles(models.Model):
-    user = models.ForeignKey(ExtendingUser, on_delete=models.CASCADE)
-    role = models.ForeignKey(UserRoles, on_delete=models.CASCADE)
-
-    class Meta:
-        db_table = "custom_requests_assignedroles"
