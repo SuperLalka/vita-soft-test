@@ -16,14 +16,8 @@ class RequestsAdmin(admin.ModelAdmin):
     list_filter = ('user', 'status')
 
 
-class AssignedRolesInline(admin.TabularInline):
-    model = models.AssignedRoles
-    extra = 1
-
-
 @admin.register(models.ExtendingUser)
 class ExtendingUserAdmin(admin.ModelAdmin):
-    inlines = [AssignedRolesInline]
     list_display = ('user',)
 
 
