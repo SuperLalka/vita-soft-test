@@ -1,0 +1,107 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 6,
+    "fields": {
+      "password": "pbkdf2_sha256$216000$k0x9A0FjacWE$8iwu30jdFvome3zUUh8xpaUiQYNJdQQf+y3jOiDLmtI=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "USER",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2020-11-25T12:45:18.156Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 7,
+    "fields": {
+      "password": "pbkdf2_sha256$216000$envOdjBlM6m0$Ym/GIhYkCHauR+s+J7z0Lw/UwghudtmzRQTiCZoCMH8=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "OPERATOR",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2020-11-25T13:51:12.534Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 8,
+    "fields": {
+      "password": "pbkdf2_sha256$216000$7pcr6HcJ9JlG$b60YJts59wNaBIO091B9EXqZ/kdX9ZCEZLm5z4y3CHk=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "ADMIN",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2020-11-25T13:51:23.949Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "custom_requests.extendinguser",
+    "pk": 6,
+    "fields": {
+      "user": 6,
+      "roles": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "custom_requests.extendinguser",
+    "pk": 7,
+    "fields": {
+      "user": 7,
+      "roles": [
+        2
+      ]
+    }
+  },
+  {
+    "model": "custom_requests.extendinguser",
+    "pk": 8,
+    "fields": {
+      "user": 8,
+      "roles": [
+        3
+      ]
+    }
+  },
+  {
+    "model": "custom_requests.userroles",
+    "pk": 1,
+    "fields": {
+      "role_name": "usr"
+    }
+  },
+  {
+    "model": "custom_requests.userroles",
+    "pk": 2,
+    "fields": {
+      "role_name": "opr"
+    }
+  },
+  {
+    "model": "custom_requests.userroles",
+    "pk": 3,
+    "fields": {
+      "role_name": "adm"
+    }
+  }
+]
