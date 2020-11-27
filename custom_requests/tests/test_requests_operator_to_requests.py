@@ -32,14 +32,19 @@ class RequestsApiTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         assert_that(response.json(), has_entries({
             'id': self.request_in_snt.id,
-            'text': self.request_in_snt.text
+            'text': '-'.join(self.request_in_snt.text)
         }))
 
     def test_get_requests_list(self):
-        RequestsFactory(status='snt')
+        second_snt_request = RequestsFactory(status='snt')
         response = self.client.get('/api/requests/', follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 2)
+
+        assert_that(response.json(), contains_inanyorder(
+            has_entries(id=second_snt_request.id, text='-'.join(second_snt_request.text)),
+            has_entries(id=self.request_in_snt.id, text='-'.join(self.request_in_snt.text)),
+        ))
 
     def test_create_request(self):
         response = self.client.post('/api/requests/',
