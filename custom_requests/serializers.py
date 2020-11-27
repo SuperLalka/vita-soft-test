@@ -5,18 +5,37 @@ from rest_framework import serializers
 from . import models
 
 
-class RequestsSerializer(serializers.ModelSerializer):
+class HyphenSeparationField(serializers.CharField):
+    def to_representation(self, value):
+        return '-'.join(value)
+
+
+class CustomerRequestsSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Requests
         fields = '__all__'
-        # read_only_fields = ['user', 'status', 'created_at']
 
     def validate_status(self, value):
         if self.context['request'].user.extendinguser.check_group('usr') and \
                 self.instance and value not in ['drf', 'snt']:
             raise serializers.ValidationError(
                 "The user can change the status of his request only to 'sent'")
-        elif self.context['request'].user.extendinguser.check_group('opr') and \
+        return value
+
+    def validate_user(self, value):
+        raise serializers.ValidationError(
+            "You cannot change the author of the request")
+
+
+class OperatorRequestsSerializer(serializers.ModelSerializer):
+    text = HyphenSeparationField()
+
+    class Meta:
+        model = models.Requests
+        fields = '__all__'
+
+    def validate_status(self, value):
+        if self.context['request'].user.extendinguser.check_group('opr') and \
                 value not in ['acc', 'rej']:
             raise serializers.ValidationError(
                 "The operator can change the status of requests only to 'accepted' and 'rejected'")
@@ -27,21 +46,6 @@ class RequestsSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "The operator cannot change the text of user requests")
         return value
-
-    def validate_user(self, value):
-        raise serializers.ValidationError(
-            "You cannot change the author of the request")
-
-
-class RequestsForUserAndOperatorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Requests
-        fields = '__all__'
-        # read_only_fields = ['user', 'status', 'created_at']
-
-    def validate_user(self, value):
-        raise serializers.ValidationError(
-            "You cannot change the author of the request")
 
 
 class UsersSerializer(serializers.ModelSerializer):

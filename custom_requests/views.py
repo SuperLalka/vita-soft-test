@@ -1,5 +1,3 @@
-from django.db.models import Q
-
 from rest_framework import viewsets, mixins
 from rest_framework import permissions as drf_permissions
 from rest_framework.viewsets import GenericViewSet
@@ -8,7 +6,6 @@ from . import models, permissions, serializers
 
 
 class RequestsViewSet(viewsets.ModelViewSet):
-    serializer_class = serializers.RequestsSerializer
     lookup_field = 'id'
     permission_classes = [drf_permissions.IsAuthenticated]
     permission_classes_by_action = {'create': [permissions.UserPermission],
@@ -25,19 +22,15 @@ class RequestsViewSet(viewsets.ModelViewSet):
             return [permission() for permission in self.permission_classes]
 
     def get_queryset(self):
-        if self.request.user.extendinguser.check_group('usr') and \
-                self.request.user.extendinguser.check_group('opr'):
-            return models.Requests.objects.filter(Q(user=self.request.user, status='drf') and Q(status='snt'))
-        elif self.request.user.extendinguser.check_group('usr'):
+        if self.request.user.extendinguser.check_group('usr'):
             return models.Requests.objects.filter(user=self.request.user, status='drf')
         elif self.request.user.extendinguser.check_group('opr'):
             return models.Requests.objects.filter(status='snt')
 
     def get_serializer_class(self):
-        if self.request.user.extendinguser.check_group('usr') and \
-                self.request.user.extendinguser.check_group('opr'):
-            return serializers.RequestsForUserAndOperatorSerializer
-        return self.serializer_class
+        if self.request.user.extendinguser.check_group('opr'):
+            return serializers.OperatorRequestsSerializer
+        return serializers.CustomerRequestsSerializer
 
 
 class UsersViewSet(mixins.ListModelMixin,
