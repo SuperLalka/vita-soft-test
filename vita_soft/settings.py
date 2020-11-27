@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'custom_requests',
     # Third party modules
     'rest_framework',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
