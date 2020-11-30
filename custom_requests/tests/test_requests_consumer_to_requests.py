@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from hamcrest import *
 
-from custom_requests.factories import (
+from custom_requests.tests.factories import (
     UsersFactory,
     UserRolesFactory,
     RequestsFactory

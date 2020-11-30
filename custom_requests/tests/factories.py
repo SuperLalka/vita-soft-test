@@ -1,14 +1,13 @@
 import factory
 from datetime import datetime
 
-from . import models
+from custom_requests import models
 
 
 class UsersFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.User
 
-    # username = factory.Faker('first_name')
     username = factory.Sequence(lambda n: 'user%d' % n)
 
 
