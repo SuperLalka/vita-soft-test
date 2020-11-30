@@ -32,8 +32,7 @@ class ExtendingUser(models.Model):
         return 'Extending info for user {}'.format(self.user.username)
 
     def check_group(self, group):
-        user_roles = list(self.roles.filter(
-            extendinguser=self).values_list('role_name', flat=True))
+        user_roles = list(self.roles.values_list('role_name', flat=True))
         return group in user_roles
 
     class Meta:

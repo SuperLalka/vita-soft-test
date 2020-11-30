@@ -16,8 +16,7 @@ class CustomerRequestsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate_status(self, value):
-        if self.context['request'].user.extendinguser.check_group('usr') and \
-                self.instance and value not in ['drf', 'snt']:
+        if self.instance and value not in ['drf', 'snt']:
             raise serializers.ValidationError(
                 "The user can change the status of his request only to 'sent'")
         return value
@@ -35,17 +34,14 @@ class OperatorRequestsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate_status(self, value):
-        if self.context['request'].user.extendinguser.check_group('opr') and \
-                value not in ['acc', 'rej']:
+        if value not in ['acc', 'rej']:
             raise serializers.ValidationError(
                 "The operator can change the status of requests only to 'accepted' and 'rejected'")
         return value
 
     def validate_text(self, value):
-        if self.context['request'].user.extendinguser.check_group('opr'):
-            raise serializers.ValidationError(
-                "The operator cannot change the text of user requests")
-        return value
+        raise serializers.ValidationError(
+            "The operator cannot change the text of user requests")
 
 
 class UsersSerializer(serializers.ModelSerializer):
